@@ -1,8 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Request
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
+
 from typing import List
 import csv
 import io
@@ -14,14 +10,6 @@ except ImportError:
     openai = None
 
 app = FastAPI(title="Ask-and-Retrieve")
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
-
-
-@app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
-    """Serve the simple web UI."""
-    return templates.TemplateResponse("index.html", {"request": request})
 
 documents = []  # simple in-memory store
 
@@ -51,14 +39,6 @@ async def upload(file: UploadFile = File(...)):
         })
     return {"count": len(documents)}
 
-class QueryRequest(BaseModel):
-    text: str
-
-
-@app.post("/query")
-async def query(payload: QueryRequest):
-    """Query documents using text."""
-    vector = embed_text(payload.text)
     # compute cosine similarity
     def cosine(a, b):
         import math
