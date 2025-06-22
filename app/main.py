@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+
 from typing import List
 import csv
 import io
@@ -39,10 +39,6 @@ async def upload(file: UploadFile = File(...)):
         })
     return {"count": len(documents)}
 
-@app.post("/query")
-async def query(text: str):
-    """Query documents using text."""
-    vector = embed_text(text)
     # compute cosine similarity
     def cosine(a, b):
         import math
