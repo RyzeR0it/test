@@ -11,6 +11,12 @@ except ImportError:
 
 app = FastAPI(title="Ask-and-Retrieve")
 
+
+@app.get("/")
+async def root():
+    """Basic health check endpoint."""
+    return {"status": "ok", "message": "Ask-and-Retrieve API"}
+
 documents = []  # simple in-memory store
 
 def embed_text(text: str) -> List[float]:
