@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Ask-and-Retrieve</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Ask-and-Retrieve</h1>
+
+    <section id="upload">
+        <h2>Upload CSV</h2>
+        <form id="upload-form">
+            <input type="file" id="csv-file" accept=".csv" required>
+            <button type="submit">Upload</button>
+        </form>
+        <div id="upload-result"></div>
+    </section>
+
+    <section id="query">
+        <h2>Query</h2>
+        <form id="query-form">
+            <input type="text" id="query-text" placeholder="Ask something" required>
+            <button type="submit">Search</button>
+        </form>
+        <pre id="query-result"></pre>
+    </section>
+
+<script>
+    document.getElementById('upload-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fileInput = document.getElementById('csv-file');
+        if (!fileInput.files.length) return;
+        const fd = new FormData();
+        fd.append('file', fileInput.files[0]);
+        const res = await fetch('/upload', {method: 'POST', body: fd});
+        const data = await res.json();
+        document.getElementById('upload-result').textContent = 'Uploaded '+data.count+' items';
+        fileInput.value = '';
+    });
+
+    document.getElementById('query-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = document.getElementById('query-text').value.trim();
+        if (!text) return;
+        const res = await fetch('/query', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({text})
+        });
+        const data = await res.json();
+        document.getElementById('query-result').textContent = JSON.stringify(data.results, null, 2);
+    });
+</script>
+</body>
+</html>
